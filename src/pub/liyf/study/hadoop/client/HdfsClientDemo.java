@@ -1,8 +1,7 @@
 package pub.liyf.study.hadoop.client;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,11 +43,71 @@ public class HdfsClientDemo {
      */
     @Test
     public void testGet() throws IOException {
-//        fileSystem.copyToLocalFile(new Path("/passwd"), new Path("/"));
-//        fileSystem.close();
+        fileSystem.copyToLocalFile(new Path("/hadoop-env.sh"), new Path("/"));
         long defaultBlockSize = fileSystem.getDefaultBlockSize(new Path("/"));
         fileSystem.listStatus(new Path("/"));
         System.out.println(defaultBlockSize);
+        fileSystem.close();
+    }
+
+    /**
+     * hdfs中测试改名
+     */
+    @Test
+    public void testRename() throws IOException {
+        boolean rename = fileSystem.rename(new Path("/core-site.xml"), new Path("/core-site.xml-rename"));
+        if (rename){
+            System.out.println("rename success!");
+        }
+    }
+
+    /**
+     * hdfs中创建文件夹
+     */
+    @Test
+    public void testMKDir() throws IOException {
+        boolean mkdirs = fileSystem.mkdirs(new Path("/testMKdir0/testMKdir1"));
+        if (mkdirs){
+            System.out.println("mkdirs success!");
+            fileSystem.close();
+        }
+    }
+
+    /**
+     * hdfs中删除文件
+     */
+    @Test
+    public void testRm() throws IOException{
+        //bool值表示是否递归删除
+        boolean delete = fileSystem.delete(new Path("/testMKdir0"), true);
+        if(delete){
+            System.out.println("delete success!");
+            fileSystem.close();
+        }
+    }
+
+    /**
+     * 查询hdfs指定目录下的文件
+     */
+    @Test
+    public void testLs() throws IOException {
+        RemoteIterator<LocatedFileStatus> iterator = fileSystem.listFiles(new Path("/"), false);
+        while (iterator.hasNext()){
+            System.out.println(iterator.next().getPath());
+        }
+        fileSystem.close();
+    }
+
+    /**
+     * 查看给定目录下的文件和文件夹信息
+     * @throws IOException
+     */
+    @Test
+    public void testLs2() throws IOException{
+        FileStatus[] fileStatuses = fileSystem.listStatus(new Path("/"));
+        for (FileStatus fileStatus:fileStatuses){
+            System.out.println(fileStatus.getPath());
+        }
         fileSystem.close();
     }
 }
