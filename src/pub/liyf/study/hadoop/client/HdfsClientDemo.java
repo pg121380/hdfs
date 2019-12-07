@@ -110,4 +110,29 @@ public class HdfsClientDemo {
         }
         fileSystem.close();
     }
+
+    /**
+     * 从hdfs中直接读取文件内容
+     */
+    @Test
+    public void testReadData() throws IOException {
+        FSDataInputStream input = fileSystem.open(new Path("/writeDemo.txt"));
+        byte[] buf = new byte[1024];
+        input.read(buf);
+        System.out.println(new String(buf, 0, buf.length));
+        input.close();
+        fileSystem.close();
+    }
+
+    /**
+     * 测试直接通过流，向hdfs中写入数据
+     */
+    @Test
+    public void testWriteData() throws IOException {
+        FSDataOutputStream outputStream = fileSystem.create(new Path("/writeDemo.txt"), true);
+        String data = "hello world!";
+        outputStream.write(data.getBytes());
+        outputStream.close();
+        fileSystem.close();
+    }
 }
